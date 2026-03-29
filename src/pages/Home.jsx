@@ -54,14 +54,14 @@ export function Home({ searchText }) {
   const loading = false;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 py-8 sm:py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* New Arrivals / Recently Added - top of page */}
         <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-md dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-4xl font-extrabold">New Arrivals</h2>
-              <p className="mt-1 text-slate-600 dark:text-slate-400">Latest products added to the store</p>
+              <p className="mt-1 text-lg text-slate-600 dark:text-slate-400">Latest products added to the store</p>
             </div>
             <div>
               <button onClick={() => { const params = new URLSearchParams(searchParams); params.set('new', 'true'); setSearchParams(params); }} className="rounded-lg bg-blue-600 px-4 py-2 text-white">View All New</button>
@@ -126,8 +126,8 @@ export function Home({ searchText }) {
 
             <section className="mt-8 space-y-6 py-8 sm:py-12 border-t border-slate-200 dark:border-slate-700">
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Recommended for you</h2>
-                <p className="mt-1 text-slate-600 dark:text-slate-400">Curated picks based on your preferences</p>
+                <h2 className="text-4xl font-bold text-slate-900 dark:text-white">Recommended for you</h2>
+                <p className="mt-1 text-lg text-slate-600 dark:text-slate-400">Curated picks based on your preferences</p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6 lg:grid-cols-4">
                 {recommended.map((product) => <ProductCard key={`recommended-${product.id}`} product={product} />)}

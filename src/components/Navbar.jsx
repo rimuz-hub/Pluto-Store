@@ -1,7 +1,8 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useCartStore, useThemeStore, useAuthStore } from '../store';
-import { HiOutlineShoppingCart, HiSun, HiMoon, HiMenu, HiX, HiUser, HiChevronDown } from 'react-icons/hi';
+import { HiOutlineShoppingCart, HiSun, HiMoon, HiMenu, HiX, HiUser, HiChevronDown, HiOutlineSearch } from 'react-icons/hi';
+import { motion } from 'framer-motion';
 import { useDebounce } from '../hooks/useDebounce';
 import { siteSettings } from '../siteSettings';
 
@@ -13,6 +14,7 @@ export function Navbar({ onSearchChange }) {
   const { currentUser, register, login, logout } = useAuthStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -129,12 +131,15 @@ export function Navbar({ onSearchChange }) {
           </div>
 
           <div className="flex flex-1 items-center justify-end gap-3">
+            <button onClick={() => setMobileSearchOpen(true)} className="sm:hidden rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800" aria-label="Search">
+              <HiOutlineSearch />
+            </button>
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products..."
               aria-label="Search products"
-              className={`rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-brand-300 sm:inline-block ${location.pathname === '/' ? 'block w-64' : 'hidden w-72'}`}
+              className="hidden w-72 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-brand-300 sm:inline-block"
             />
             <button onClick={toggleTheme} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800" aria-label="Toggle theme">
               {dark ? <HiSun /> : <HiMoon />}
@@ -181,6 +186,29 @@ export function Navbar({ onSearchChange }) {
           </nav>
         )}
       </header>
+
+      {mobileSearchOpen && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+        >
+          <div className="flex items-center gap-2 p-4">
+            <input
+              ref={(el) => el && mobileSearchOpen && el.focus()}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search products..."
+              className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-brand-300"
+            />
+            <button onClick={() => setMobileSearchOpen(false)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800" aria-label="Close search">
+              <HiX />
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {showAuth && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

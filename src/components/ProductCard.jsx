@@ -36,8 +36,8 @@ export function ProductCard({ product }) {
       <div className="p-5 space-y-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-slate-900 line-clamp-2 dark:text-white">{product.name}</h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{(product.averageRating ?? product.rating ?? 0).toFixed(1)} ★ · {product.reviewCount ?? (product.reviews?.length ?? 0)} reviews</p>
+            <h3 className="text-lg font-semibold text-slate-900 line-clamp-2 dark:text-white">{product.name}</h3>
+            <p className="mt-1 text-base text-slate-500 dark:text-slate-400">{(product.averageRating ?? product.rating ?? 0).toFixed(1)} ★ · {product.reviewCount ?? (product.reviews?.length ?? 0)} reviews</p>
             <div className="mt-2 flex gap-2">
               {((product.averageRating ?? product.rating) >= 4.7) && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">Top rated</span>}
               {(product.reviewCount ?? (product.reviews?.length ?? 0)) >= 5 && <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">Best seller</span>}
@@ -49,7 +49,7 @@ export function ProductCard({ product }) {
         </div>
 
         <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-          <p className="text-lg font-bold text-slate-900 dark:text-white">
+          <p className="text-xl font-bold text-slate-900 dark:text-white">
             {product.discount > 0 ? (
               <><span>{formatCurrency(priceWithDiscount)}</span> <span className="ml-2 text-sm font-normal line-through text-slate-400">{formatCurrency(product.price)}</span></>
             ) : (

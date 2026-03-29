@@ -57,7 +57,7 @@ export function ProductDetails({ product }) {
   };
 
   return (
-    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 pb-20 sm:pb-6">
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md dark:border-slate-700 dark:bg-slate-900">
           <img
@@ -70,7 +70,7 @@ export function ProductDetails({ product }) {
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md dark:border-slate-700 dark:bg-slate-900">
           <div className="flex items-start justify-between gap-4">
-            <h1 className="text-2xl font-bold">{product.name}</h1>
+            <h1 className="text-3xl font-bold">{product.name}</h1>
             <button onClick={() => toggleFavorite(product.id)} className="text-lg text-brand-700 dark:text-brand-300">
               {isFavorite ? '★' : '☆'}
             </button>
@@ -85,7 +85,7 @@ export function ProductDetails({ product }) {
             <span className={`rounded-full px-2 py-1 text-xs font-semibold ${inStock ? 'bg-green-500 text-white' : 'bg-slate-500 text-white'}`}>{inStock ? 'In stock' : 'Out of stock'}</span>
           </div>
           <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="text-3xl font-black">
+            <div className="text-4xl font-black">
               {product.discount > 0 ? (
                 <><span>{formatCurrency(priceWithDiscount)}</span> <small className="ml-2 text-base font-medium line-through text-slate-400 dark:text-slate-500">{formatCurrency(product.price)}</small></>
               ) : (
@@ -107,6 +107,18 @@ export function ProductDetails({ product }) {
               <span className="text-lg">Order via WhatsApp</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 z-10 bg-white border-t border-slate-200 p-4 sm:hidden dark:bg-slate-900 dark:border-slate-800">
+        <div className="flex gap-2">
+          <button onClick={() => addItem({ ...product, variantLabel: selectedVariant?.label, variantStock: selectedVariant?.stock })} disabled={!inStock} className="flex-1 rounded-lg bg-blue-600 px-4 py-3 text-base font-bold text-white hover:bg-blue-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+            Add to Cart
+          </button>
+          <button onClick={handleWhatsAppOrder} className="flex-1 rounded-lg bg-green-600 px-4 py-3 text-base font-bold text-white hover:bg-green-700 active:scale-95 transition-all flex items-center justify-center gap-2">
+            <FaWhatsapp className="h-5 w-5" />
+            Order
+          </button>
         </div>
       </div>
 
