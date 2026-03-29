@@ -1,10 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ProductForm } from '../components/ProductForm';
 import { ProductCard } from '../components/ProductCard';
-import { useProductStore } from '../store';
+import { useProductStore, useAuthStore } from '../store';
 import { siteSettings } from '../siteSettings';
 
 export function Admin() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuthStore();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/');
+    }
+  }, [currentUser, navigate]);
+
   const products = useProductStore((state) => state.products);
   const addProduct = useProductStore((state) => state.addProduct);
   const updateProduct = useProductStore((state) => state.updateProduct);
@@ -14,9 +24,6 @@ export function Admin() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [openReviewsFor, setOpenReviewsFor] = useState(null);
   const [sortOption, setSortOption] = useState('default');
-  const [password, setPassword] = useState('');
-  const [accessGranted, setAccessGranted] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSave = (item) => {
     if (editingProduct) {
@@ -48,27 +55,17 @@ export function Admin() {
     return items;
   }, [products, sortOption]);
 
-  const handleAdminLogin = (event) => {
-    event.preventDefault();
-    if (password === siteSettings.adminPassword) {
-      setAccessGranted(true);
-      setError('');
-    } else {
-      setError('Incorrect password');
-    }
-  };
-
   const categories = useMemo(() => [...new Set(products.map((product) => product.category))], [products]);
 
-  if (!accessGranted) {
+  if (!currentUser) {
+    return <div>Loading...</div>;
+  }
+
+  if (!currentUser.isAdmin) {
     return (
       <div className="mx-auto max-w-md p-6">
-        <h1 className="mb-4 text-2xl font-bold">Admin Login</h1>
-        <form onSubmit={handleAdminLogin} className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter admin password" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-slate-700" />
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          <button type="submit" className="rounded-lg bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700">Enter</button>
-        </form>
+        <h1 className="mb-4 text-2xl font-bold">Access Denied</h1>
+        <p className="text-sm text-slate-500">You do not have permission to access this page.</p>
       </div>
     );
   }

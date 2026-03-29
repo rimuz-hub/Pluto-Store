@@ -1,10 +1,11 @@
 import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useCartStore, useProductStore } from '../store';
+import { useCartStore, useProductStore, useAuthStore } from '../store';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../utils/formatCurrency';
 import { siteSettings } from '../siteSettings';
 import { Toast } from './Toast';
+import { FaWhatsapp } from 'react-icons/fa';
 
 export function ProductDetails({ product }) {
   const addItem = useCartStore((state) => state.addItem);
@@ -12,11 +13,11 @@ export function ProductDetails({ product }) {
   const favoriteIds = useCartStore((state) => state.favoriteIds);
   const isFavorite = favoriteIds.includes(product.id);
   const navigate = useNavigate();
+  const { currentUser } = useAuthStore();
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0] || null);
   const addReview = useProductStore((state) => state.addReview);
   const deleteReview = useProductStore((state) => state.deleteReview);
 
-  const [reviewName, setReviewName] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [toast, setToast] = useState('');
@@ -30,6 +31,30 @@ export function ProductDetails({ product }) {
       setSelectedVariant(product.variants[0]);
     }
   }, [product.variants, selectedVariant]);
+
+  const handleWhatsAppOrder = () => {
+    const message = `Hello, I want to order: ${product.name} - Price: ${formatCurrency(priceWithDiscount)}`;
+    const whatsappBase = siteSettings.socials.whatsapp || `https://wa.me/${siteSettings.whatsappNumber}`;
+    const separator = whatsappBase.includes('?') ? '&' : '?';
+    const url = `${whatsappBase}${separator}text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  };
+
+  const getInitials = (name) => {
+    const normalized = (name || '').trim();
+    if (!normalized) return '??';
+    const words = normalized.split(' ').filter(Boolean);
+    if (words.length === 0) return '??';
+    if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  };
+
+  const getRandomColor = (name) => {
+    const normalized = (name || 'user').trim();
+    const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-teal-500'];
+    const index = [...normalized].reduce((a, b) => a + b.charCodeAt(0), 0) % colors.length;
+    return colors[index];
+  };
 
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -77,6 +102,10 @@ export function ProductDetails({ product }) {
             <button onClick={() => { addItem({ ...product, variantLabel: selectedVariant?.label, variantStock: selectedVariant?.stock }); navigate('/cart'); }} disabled={!inStock} className="flex-1 rounded-lg border-2 border-blue-600 px-6 py-3.5 text-lg font-bold text-blue-600 hover:bg-blue-50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all dark:hover:bg-slate-800 dark:text-blue-400 dark:border-blue-400">
               Buy Now
             </button>
+            <button onClick={handleWhatsAppOrder} className="flex-1 rounded-lg bg-green-600 px-6 py-3.5 text-lg font-bold text-white hover:bg-green-700 active:scale-95 transition-all flex items-center justify-center gap-2">
+              <FaWhatsapp className="h-6 w-6" />
+              <span className="text-lg">Order via WhatsApp</span>
+            </button>
           </div>
         </div>
       </div>
@@ -90,10 +119,24 @@ export function ProductDetails({ product }) {
               {product.reviews.map((review, index) => (
                 <div key={`${product.id}-review-${review.id || index}`} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
                   <div className="flex items-center justify-between">
-                    <p className="font-semibold">{review.name}</p>
+                    <div className="flex items-center gap-2">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white ${getRandomColor(review.userName)}`}>
+                        {getInitials(review.userName)}
+                      </div>
+                      <div>
+                        <p className="font-semibold">{review.userName}</p>
+                        {review.verifiedBuyer && (
+                          <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
+                            Verified Buyer
+                          </span>
+                        )}
+                      </div>
+                    </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-amber-500">{'★'.repeat(Math.round(review.rating))}</span>
-                      <button onClick={() => { deleteReview(product.id, review.id); setToast('Review deleted'); }} className="text-xs text-red-600">Delete</button>
+                      {(currentUser && (review.userEmail === currentUser.email || currentUser.isAdmin)) && (
+                        <button onClick={() => { deleteReview(product.id, review.id, currentUser.email, currentUser.isAdmin); setToast('Review deleted'); }} className="text-xs text-red-600">Delete</button>
+                      )}
                     </div>
                   </div>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{review.comment}</p>
@@ -121,25 +164,38 @@ export function ProductDetails({ product }) {
             </div>
             <div className="mt-4 rounded-lg border border-slate-100 p-3">
               <h3 className="font-semibold">Write a review</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                if (!reviewName.trim() || !reviewComment.trim() || !reviewRating) {
-                  setToast('Please provide name, rating and comment');
-                  return;
-                }
-                addReview(product.id, { name: reviewName.trim(), rating: reviewRating, comment: reviewComment.trim() });
-                setReviewName(''); setReviewRating(5); setReviewComment('');
-                setToast('Review submitted — thanks!');
-              }} className="space-y-2">
-                <input value={reviewName} onChange={(e) => setReviewName(e.target.value)} placeholder="Your name" className="w-full rounded-lg border border-slate-200 p-2 text-sm" />
-                <div className="flex items-center gap-2">
-                  {[1,2,3,4,5].map((i) => (
-                    <button key={i} type="button" onClick={() => setReviewRating(i)} className={`text-2xl ${i <= reviewRating ? 'text-amber-400' : 'text-slate-300'}`}>★</button>
-                  ))}
-                </div>
-                <textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} rows={3} placeholder="Your review" className="w-full rounded-lg border border-slate-200 p-2 text-sm" />
-                <button type="submit" className="w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white">Submit Review</button>
-              </form>
+              {currentUser ? (
+                (() => {
+                  const existingReview = product.reviews.find(r => r.userEmail === currentUser.email);
+                  if (existingReview) {
+                    return (
+                      <p className="text-sm text-slate-500">You already reviewed this product.</p>
+                    );
+                  }
+                  return (
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!reviewComment.trim() || !reviewRating) {
+                        setToast('Please provide rating and comment');
+                        return;
+                      }
+                      addReview(product.id, { userEmail: currentUser.email, userName: currentUser.name, rating: reviewRating, comment: reviewComment.trim() });
+                      setReviewRating(5); setReviewComment('');
+                      setToast('Review submitted — thanks!');
+                    }} className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        {[1,2,3,4,5].map((i) => (
+                          <button key={i} type="button" onClick={() => setReviewRating(i)} className={`text-2xl ${i <= reviewRating ? 'text-amber-400' : 'text-slate-300'}`}>★</button>
+                        ))}
+                      </div>
+                      <textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} rows={3} placeholder="Your review" className="w-full rounded-lg border border-slate-200 p-2 text-sm" />
+                      <button type="submit" className="w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white">Submit Review</button>
+                    </form>
+                  );
+                })()
+              ) : (
+                <p className="text-sm text-slate-500">Please log in to write a review.</p>
+              )}
             </div>
           </div>
         </div>

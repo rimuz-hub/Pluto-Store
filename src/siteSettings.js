@@ -26,8 +26,10 @@ export const siteSettings = {
   },
   
   // Image fallback URL - used when product images fail to load
-  fallbackImage: 'https://via.placeholder.com/500x400?text=No+Image',
+  // Using inline SVG data URI avoids external DNS dependency
+  fallbackImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nNTAwJyBoZWlnaHQ9JzQwMCcgdmVyc2lvbj0nMS4xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxzdHlsZT4uc3Qwe2ZpbGw6I2Q4ZDhkODt9LmNsYXNzMix7ZmlsbDojNzc3O308L3N0eWxlPjxzdmcgaWQ9J2JhY2tncm91bmQnPjxwYXRoIGNsYXNzPSdzdDAiIGQ9J00wIDBoNTAwdjQwMEgwei8+PC9zdmc+PHRleHQgeD0nMjUwJyB5PScyMjAnZm9udC1mYW1pbHk9J0FyaWFsJz4gPGNpcmNsZSBjeD0nMjUwJyBjeT0nMjAwJyByPScxMDAnIGZpbGw9JyNkOGQnIC8+PHRleHQgeD0nMjUwJyB5PScyMDAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtc2l6ZT0nMjQnIGZpbGw9JyMwMDAnPllubyBJbWFnZTwvdGV4dD48L3RleHQ+PC9zdmc+',
   
   // Admin
-  adminPassword: 'letmein123',    // Edit: change admin panel password (also in src/pages/Admin.jsx)
+  adminEmail: "platisthere@gmail.com",    // Edit: change admin email
+  whatsappNumber: "78 716 762",    // Edit: change WhatsApp number for orders
 };

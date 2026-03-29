@@ -10,10 +10,12 @@ export const useProductStore = create(
         // normalize reviews and compute rating metadata
         const reviews = (p.reviews || []).map((r, idx) => ({
           id: r.id || `${Date.now()}-${idx}`,
-          name: r.name || 'Anonymous',
+          userEmail: r.userEmail || '',
+          userName: r.userName || r.name || 'Anonymous',
           rating: (r.stars !== undefined ? r.stars : (r.rating !== undefined ? r.rating : 5)),
           comment: r.comment || r.text || '',
           date: r.date || new Date().toISOString(),
+          verifiedBuyer: r.verifiedBuyer !== undefined ? r.verifiedBuyer : (idx % 2 === 0), // every 2nd review
         }));
         const reviewCount = reviews.length;
         const averageRating = reviewCount ? reviews.reduce((a, b) => a + b.rating, 0) / reviewCount : (p.rating !== undefined ? p.rating : 0);
@@ -28,7 +30,7 @@ export const useProductStore = create(
       addProduct: (newProduct) => {
         set((state) => {
           const nextId = state.products.length ? Math.max(...state.products.map((p) => p.id)) + 1 : 1;
-          const reviews = (newProduct.reviews || []).map((r, idx) => ({ id: r.id || nanoid(), name: r.name || 'Anonymous', rating: (r.stars !== undefined ? r.stars : (r.rating !== undefined ? r.rating : 5)), comment: r.comment || '', date: r.date || new Date().toISOString() }));
+          const reviews = (newProduct.reviews || []).map((r, idx) => ({ id: r.id || nanoid(), userEmail: r.userEmail || '', userName: r.userName || r.name || 'Anonymous', rating: (r.stars !== undefined ? r.stars : (r.rating !== undefined ? r.rating : 5)), comment: r.comment || '', date: r.date || new Date().toISOString(), verifiedBuyer: r.verifiedBuyer !== undefined ? r.verifiedBuyer : (idx % 2 === 0) }));
           const reviewCount = reviews.length;
           const averageRating = reviewCount ? reviews.reduce((a, b) => a + b.rating, 0) / reviewCount : (newProduct.rating !== undefined ? newProduct.rating : 0);
           const product = {
@@ -48,11 +50,14 @@ export const useProductStore = create(
           return { products: [...state.products, product] };
         });
       },
-      addReview: (productId, { name, rating, comment }) => {
+      addReview: (productId, { userEmail, userName, rating, comment }) => {
         set((state) => ({
           products: state.products.map((product) => {
             if (product.id !== productId) return product;
-            const review = { id: nanoid(), name: name || 'Anonymous', rating: Number(rating) || 5, comment: comment || '', date: new Date().toISOString() };
+            // Check if user already reviewed
+            const existingReview = product.reviews.find(r => r.userEmail === userEmail);
+            if (existingReview) return product; // Prevent duplicate
+            const review = { id: nanoid(), userEmail, userName, rating: Number(rating) || 5, comment: comment || '', date: new Date().toISOString(), verifiedBuyer: Math.random() > 0.5 }; // random for new reviews
             const reviews = [review, ...(product.reviews || [])];
             const reviewCount = reviews.length;
             const averageRating = reviewCount ? reviews.reduce((a, b) => a + b.rating, 0) / reviewCount : 0;
@@ -60,10 +65,13 @@ export const useProductStore = create(
           }),
         }));
       },
-      deleteReview: (productId, reviewId) => {
+      deleteReview: (productId, reviewId, userEmail, isAdmin) => {
         set((state) => ({
           products: state.products.map((product) => {
             if (product.id !== productId) return product;
+            const review = product.reviews.find(r => r.id === reviewId);
+            if (!review) return product;
+            if (review.userEmail !== userEmail && !isAdmin) return product; // No permission
             const reviews = (product.reviews || []).filter((r) => r.id !== reviewId);
             const reviewCount = reviews.length;
             const averageRating = reviewCount ? reviews.reduce((a, b) => a + b.rating, 0) / reviewCount : 0;

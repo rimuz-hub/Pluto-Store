@@ -11,13 +11,13 @@ export function Footer() {
         </div>
         <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
           {siteSettings.socials.instagram && (
-            <a href={siteSettings.socials.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-brand-700"><FaInstagram /></a>
+            <a href={siteSettings.socials.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-brand-700 text-2xl"><FaInstagram /></a>
           )}
           {siteSettings.socials.whatsapp && (
-            <a href={siteSettings.socials.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="hover:text-brand-700"><FaWhatsapp /></a>
+            <a href={siteSettings.socials.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="hover:text-brand-700 text-2xl"><FaWhatsapp /></a>
           )}
           {siteSettings.socials.discord && (
-            <a href={siteSettings.socials.discord} target="_blank" rel="noopener noreferrer" aria-label="Discord" className="hover:text-brand-700"><FaDiscord /></a>
+            <a href={siteSettings.socials.discord} target="_blank" rel="noopener noreferrer" aria-label="Discord" className="hover:text-brand-700 text-2xl"><FaDiscord /></a>
           )}
         </div>
       </div>
