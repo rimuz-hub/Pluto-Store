@@ -3,7 +3,6 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useCartStore, useThemeStore, useAuthStore } from '../store';
 import { HiOutlineShoppingCart, HiSun, HiMoon, HiMenu, HiX, HiUser, HiChevronDown, HiOutlineSearch } from 'react-icons/hi';
 import { motion } from 'framer-motion';
-import { useDebounce } from '../hooks/useDebounce';
 import { siteSettings } from '../siteSettings';
 
 export function Navbar({ onSearchChange }) {
@@ -18,7 +17,6 @@ export function Navbar({ onSearchChange }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 360);
 
   const [showAuth, setShowAuth] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -43,17 +41,17 @@ export function Navbar({ onSearchChange }) {
   };
 
   useEffect(() => {
-    onSearchChange?.(debouncedSearch);
-  }, [debouncedSearch, onSearchChange]);
+    onSearchChange?.(search);
+  }, [search, onSearchChange]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('q') !== debouncedSearch) {
-      if (debouncedSearch) params.set('q', debouncedSearch);
+    if (params.get('q') !== search) {
+      if (search) params.set('q', search);
       else params.delete('q');
       navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
     }
-  }, [debouncedSearch]);
+  }, [search]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
