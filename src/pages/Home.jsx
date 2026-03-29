@@ -68,7 +68,7 @@ export function Home({ searchText }) {
             </div>
           </div>
           <div className="mt-6">
-            <div className="flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible md:pb-0">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6 lg:grid-cols-4">
               {recentlyAdded.map((p) => <ProductCard key={`new-${p.id}`} product={p} />)}
             </div>
           </div>
@@ -76,7 +76,7 @@ export function Home({ searchText }) {
 
         {/* Mobile Filter Button */}
         <div className="lg:hidden mb-4">
-          <button onClick={() => setMobileFilterOpen(true)} className="w-full rounded-lg bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200">
+          <button onClick={() => setMobileFilterOpen(true)} className="w-full min-h-[44px] rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 transition-colors">
             Filters
           </button>
         </div>
@@ -129,7 +129,7 @@ export function Home({ searchText }) {
                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Recommended for you</h2>
                 <p className="mt-1 text-slate-600 dark:text-slate-400">Curated picks based on your preferences</p>
               </div>
-              <div className="flex gap-6 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible sm:pb-0">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6 lg:grid-cols-4">
                 {recommended.map((product) => <ProductCard key={`recommended-${product.id}`} product={product} />)}
               </div>
             </section>

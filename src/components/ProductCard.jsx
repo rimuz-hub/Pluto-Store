@@ -59,10 +59,10 @@ export function ProductCard({ product }) {
         </div>
 
         <div className="flex flex-col gap-2 pt-2 sm:flex-row">
-          <button onClick={() => addItem(product)} disabled={!inStock} className="flex-1 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all sm:px-4 sm:py-2.5">
+          <button onClick={() => addItem(product)} disabled={!inStock} className="flex-1 min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all sm:py-2.5">
             Add to cart
           </button>
-          <button onClick={() => { addItem(product); navigate('/cart'); }} disabled={!inStock} className="flex-1 rounded-lg border-2 border-blue-600 px-6 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all dark:hover:bg-slate-800 dark:text-blue-400 dark:border-blue-400 sm:px-4 sm:py-2.5">
+          <button onClick={() => { addItem(product); navigate('/cart'); }} disabled={!inStock} className="flex-1 min-h-[44px] rounded-lg border-2 border-blue-600 px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all dark:hover:bg-slate-800 dark:text-blue-400 dark:border-blue-400 sm:py-2.5">
             Buy now
           </button>
         </div>

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore, useProductStore } from '../store';
 import { formatCurrency } from '../utils/formatCurrency';
+import { siteSettings } from '../siteSettings';
 
 export function Cart() {
   const items = useCartStore((state) => state.items);
@@ -36,27 +37,27 @@ export function Cart() {
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">Shopping Cart</h1>
       <div className="mt-4 space-y-4">
         {items.map((item) => (
-          <div key={item.id} className="rounded-xl border p-4 dark:border-slate-800">
-            <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[auto,1fr,auto] sm:items-center">
+          <div key={item.id} className="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+            <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[auto,1fr,auto] sm:items-start">
               <img
-                src={item.image || 'https://via.placeholder.com/150?text=No+Image'}
+                src={item.image || siteSettings.fallbackImage}
                 alt={item.name}
-                className="h-20 w-20 rounded-lg object-cover self-center sm:self-auto"
+                className="h-24 w-24 rounded-lg object-cover self-center sm:self-start"
                 loading="lazy"
-                onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150?text=No+Image'; }}
+                onError={(e) => { e.currentTarget.src = siteSettings.fallbackImage; }}
               />
-              <div>
-                <p className="font-semibold">{item.name}</p>
-                <p className="text-sm text-slate-500">{formatCurrency(item.price)} x {item.quantity}</p>
-                <p className="text-xs text-slate-400">{item.variantLabel || 'Default variant'}</p>
+              <div className="min-w-0">
+                <p className="font-semibold text-slate-900 dark:text-white line-clamp-2">{item.name}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{formatCurrency(item.price)} × {item.quantity}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">{item.variantLabel || 'Default variant'}</p>
               </div>
-              <div className="flex flex-col items-end gap-2">
-                <div className="flex items-center gap-1">
-                  <button onClick={() => updateQuantity(item.cartKey, item.quantity - 1)} className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">−</button>
-                  <span className="px-3 font-semibold">{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.cartKey, item.quantity + 1)} disabled={item.quantity >= item.stock} className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-400">+</button>
+              <div className="flex flex-col gap-3 w-full sm:w-auto">
+                <div className="flex items-center gap-2 justify-center sm:justify-start">
+                  <button onClick={() => updateQuantity(item.cartKey, item.quantity - 1)} className="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-lg bg-slate-600 text-white hover:bg-slate-700 font-semibold">−</button>
+                  <span className="px-4 py-2 font-semibold text-center text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 rounded-lg min-w-[50px]">{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item.cartKey, item.quantity + 1)} disabled={item.quantity >= item.stock} className="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-lg bg-slate-600 text-white hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold">+</button>
                 </div>
-                <button onClick={() => removeItem(item.cartKey)} className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg">Remove</button>
+                <button onClick={() => removeItem(item.cartKey)} className="min-h-[44px] w-full text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg transition-colors">Remove</button>
               </div>
             </div>
           </div>
