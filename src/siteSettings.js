@@ -31,5 +31,5 @@ export const siteSettings = {
   
   // Admin
   adminEmail: "platisthere@gmail.com",    // Edit: change admin email
-  whatsappNumber: "78 716 762",    // Edit: change WhatsApp number for orders
+  whatsappNumber: "78 716762",    // Edit: change WhatsApp number for orders
 };
